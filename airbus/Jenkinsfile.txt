@@ -1,0 +1,73 @@
+#!groovy
+pipeline {
+    agent { label "master" }
+    environment {
+        gitURL= "https://github.com/jayk2020/devops.git"
+    }
+
+stages {
+    stage("Build Docker Image") {
+    steps {
+    checkout([$class: 'GitSCM', branches: [[name: "main"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX', url: "${gitURL}"]]])
+
+    sh '''
+    cd airbus/app
+    docker build -t flask-app:latest .
+    '''
+
+    }
+    }
+    
+    stage ("Run image") {
+          
+steps {
+    sh '''
+    docker run -d -p 5000:5000 flask-app
+        '''
+        }
+}
+
+stage('Testing') {
+  steps{
+	script {
+	sh '''
+    if [ $( docker ps | grep flask-app | awk -F " " '{ print $2 }') == "flask-app" ] 
+    then
+    echo "Docker container is running" >>  test_results.txt
+        ip=$(hostname -i)
+        output=$(curl http://$ip:5000/)
+        response=$(curl -I http://$ip:5000/ | grep HTTP | awk -F " " ' { print $2 }')
+        if [ "$output" == "Hello Airbus" ]
+        then
+        echo "Application ran successfully" >>  test_results.txt
+        echo "Response code: $response" >>  test_results.txt
+        else
+        echo "Application failed" >>  test_results.txt
+        fi
+    else
+    echo "Docker container is not running" >>  test_results.txt
+    fi
+	'''
+	}
+	
+    }
+  }
+
+stage('Slack Notification') {
+  steps{
+slackUploadFile channel: '#channel-name', credentialId: 'slack', filePath: './test_results.txt', initialComment: 'Test Report'
+      
+  }
+}
+
+
+stage('Cleanup') {
+  steps{
+	cleanWs()
+    }
+  }
+
+
+
+}
+}
