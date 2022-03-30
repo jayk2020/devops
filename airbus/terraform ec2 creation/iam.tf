@@ -14,8 +14,6 @@ module "jenkinsrole" {
   source          = "./iam_role"
   name            = "airbus-jenkins-ec2-role"
   policy_document = data.aws_iam_policy_document.ec2-policy-doc.json
-  tag          = "airbus-jenkins-ec2-role"
-  project_name = var.project_name
 
 }
 

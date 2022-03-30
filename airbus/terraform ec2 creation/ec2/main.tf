@@ -7,6 +7,7 @@ resource "aws_instance" "ec2" {
   vpc_security_group_ids      = [ var.sg_id ]
   associate_public_ip_address = var.public_address
   iam_instance_profile= var.instance_profile_name
+  user_data   = data.template_file.user_data.rendered
 
   root_block_device {
     volume_type           = "gp2"
@@ -39,4 +40,6 @@ resource "aws_volume_attachment" "ebs_attachment" {
   instance_id = aws_instance.ec2.id
 }
 
-
+data "template_file" "user_data" {
+template = file("${path.root}/${var.file_name}")
+}

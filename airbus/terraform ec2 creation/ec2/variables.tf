@@ -21,3 +21,4 @@ variable "ec2_create_volume" {
 
     }))
 }
+variable "file_name" { }
