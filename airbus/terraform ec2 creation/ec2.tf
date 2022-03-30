@@ -11,8 +11,9 @@ module "jenkins" {
   tag                     = "Airbus-Jenkins"
   root_delete_termination = "true"
   ebs_delete_termination  = "true"
-  public_address          = "false"
+  public_address          = "true"
   project_name            = var.project_name
   ec2_create_volume = [ ]
   file_name = "userdata.tpl"
+  
 }

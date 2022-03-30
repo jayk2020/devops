@@ -1,7 +1,8 @@
 
 - name: Setting up jenkins
-  hosts: jenkins_server
-  remote_user: centos
+  hosts: 127.0.0.1
+  connection: local
+  remote_user: ec2-user
   become: yes
   become_user: root
   tasks:
@@ -23,14 +24,18 @@
 
     - name: install the latest version of java
       yum:
-        name: java-11-openjdk
+        name: java-1.8.0-openjdk
         state: latest
 
-    - name: install the latest version of java
+    - name: install the latest version of jenkins
       yum:
         name: jenkins
         state: latest
 
+    - name: start jenkins
+      service:
+        name: jenkins
+        state: started
 
 
 

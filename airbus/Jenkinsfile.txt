@@ -1,6 +1,6 @@
 #!groovy
 pipeline {
-    agent { label "master" }
+    agent any
     environment {
         gitURL= "https://github.com/jayk2020/devops.git"
     }
@@ -8,7 +8,7 @@ pipeline {
 stages {
     stage("Build Docker Image") {
     steps {
-    checkout([$class: 'GitSCM', branches: [[name: "main"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX', url: "${gitURL}"]]])
+    checkout([$class: 'GitSCM', branches: [[name: "main"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '92f0b245-4ca7-41d8-90fd-ecfce5c1b2ab', url: "${gitURL}"]]])
 
     sh '''
     cd airbus/app
@@ -55,17 +55,12 @@ stage('Testing') {
 
 stage('Slack Notification') {
   steps{
-slackUploadFile channel: '#channel-name', credentialId: 'slack', filePath: './test_results.txt', initialComment: 'Test Report'
+slackUploadFile channel: '#test', credentialId: 'slack', filePath: './test_results.txt', initialComment: 'Test Report'
       
   }
 }
 
 
-stage('Cleanup') {
-  steps{
-	cleanWs()
-    }
-  }
 
 
 

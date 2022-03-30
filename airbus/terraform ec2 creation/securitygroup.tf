@@ -9,19 +9,12 @@ module "sg-jenkins" {
 
 ingress_rules = [ 
     {
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_block  = "172.31.0.0/16"
-      description = "ssh access"
-    },
-    {
-      from_port   = 8080
-      to_port     = 8080
-      protocol    = "tcp"
-      cidr_block  = "172.31.0.0/16"
-      description = "jenkins port access for alb"
-    },    
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = "0.0.0.0/0"
+      description = "This is for internet access"
+    },   
 
 ]
   egress_rules = [
